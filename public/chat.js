@@ -5,6 +5,7 @@ var socket = io.connect('http://localhost:4000');
 var message = document.getElementById('message');
 var handle = document.getElementById('handle');
 var button = document.getElementById('send');
+var color = document.getElementById('colorButton');
 var output = document.getElementById('output');
 var feedback = document.getElementById('feedback');
 
@@ -36,11 +37,9 @@ message.addEventListener('keypress', function(){
 socket.on('chat', function(data){
     output.innerHTML += '<p><strong>' + data.handle + '</strong>:  ' + data.message + '</p>';
     feedback.innerHTML = '';
-    console.log('outside')
-    if (data.message.charAt(0) === '//') {
-        console.log('Got in here.')
-        bot();
-    }
+    // if (data.message.charAt(0) == '/') {
+    //     bot(data);
+    // }
     output.scrollIntoView(false); //scrolls to bottom
     message.value = ''; //clears the message box
 });
@@ -52,10 +51,37 @@ socket.on('typing', function(data){
 
 
 //Bot code
-function bot() {
-    //parse the message
-    message = message.substring(1, data.message.length);
-    console.log(message);
-    var parsed = data.message.split(/(d-\+)+/);
-    output.innerHTML += '<p><strong>DiceBot</strong>:  ' + parsed + '</p>'; //TODO Change this.
-}
+// function bot(data) {
+//     //parse the message
+//     try {
+//         output.innerHTML += '<p><strong>Bot Got</strong>:  ' + data.message + '</p>';
+        
+//         var temp;
+//         var numDice;
+//         var roll;
+//         for (var i = 0; i < data.message.length; i++) {
+//             switch (data.message.charAt(i)) {
+//                 case '/' : //Do nothing
+//                     break;
+//                 case /(\d)/ :
+//                     temp += data.message.charAt(i); //TODO make sure this is adding char not int
+//                     break;
+//                 case 'd' :
+//                     numDice = temp; //May need to parse into an integer
+//                     temp = '';
+//                     break;
+//                 case '+' :
+//                     break;
+//                 case '-' :
+//                     break;
+//                 default:
+//                     throw true;
+                    
+//             }
+//             roll = temp * Math.random();
+//         }
+//         output.innerHTML += '<p><strong>DiceBot</strong>:  ' + roll + '</p>'; //TODO Change this.    
+//     } catch (err) {
+//         output.innerHTML += '<p><strong>DiceBot</strong>:  There was an issue with your syntax.</p>';
+//     }
+// }
