@@ -1,0 +1,121 @@
+User Authentification
+
+
+.gitignore //prevents confidential files from being committed
+  node_modules
+  secrets.js
+  
+
+index.js
+  const express = require("express");
+  const path = require("path");
+  const secrets = require("secrets");
+  const app = express();
+  
+  let session = [];
+  
+  app.get("/", (req, res)=>{
+    res.sendFile(path.join(_dirname, "/index.html"));
+  })
+  
+  app.get("/gethubRedirect", (req, res)=>{
+    res.redirect(`https://github.com/login/oauth/authorize?client_id=${secrets.client_id}&redirect_url=http://localhost:3000/callback&state=qwerty);
+  })
+  
+  app.get("/callback", (req, res)=>{
+    console.log("Back from github.");
+    let temp_token = res.query.code;
+    
+    axios.post("https://github.com/login/oauth/access_token"), {
+      client_id: secrets.client_id,
+      client_secret: secrets.client_secret,
+      state: "qwerty"
+      code: temp_token,
+      redirect_url: "http//localhost:3000/loggedin",
+    })
+  });
+  
+  app.use("/loggedin")
+  
+  app.get("/private.html", (req, res)=>{
+    //We need a route guard....
+    let token = req.query.session;
+    if(token && session.find(i=>i.token==token)) {
+      res.sendFile(path.join(_dirname, "/private.html"));
+    } else {
+      res.redirect("/unauthorized.html");
+    }
+  })
+  
+  app.get("/unauthorized", (req, res)=>{
+    res.sendFile(path.join(_dirname, "/unauthorized.html"));
+  })
+  
+  app.get("/login", (req, res)=>{
+    if(req.query.username == "bobby" && req.query.password == "password123") {
+      let sessionName = Math.random();
+      session.push({
+        token:sessionName,
+        username:req.query.username
+      });
+      res.redirect(`/private.html?session=${sessionName}`);
+    } else {
+      res.redirect("/unauthorized.html");
+    }
+  }
+  
+  app.listen(3000,()=>{
+    console.log("listening on 3000");
+  })
+  
+  
+  
+index.html
+ <html>
+  <head>
+    <title>
+    </title>
+  </head>
+  <body>
+    <form method="GET" action="/login">
+      <input type="text" name="username" value="bobby"/>
+      <input type="password" name="password" value="password123"/>
+      <input type="submit" value="Submit Form"/>
+    </form>
+    <a href=
+  </body>
+ </html>
+
+
+
+private.html
+ <html>
+  <head>
+    <title>
+    </title>
+  </head>
+  <body>
+    This is a secure page.  You should not be here unless you are logged in. <a href="index.html">Logout</a>
+  </body>
+ </html>
+
+
+
+unauthorized.html
+ <html>
+  <head>
+    <title>
+    </title>
+  </head>
+  <body>
+    You are not authorized to be here or had bad credentials. <a href="index.html">Return to base.</a>
+  </body>
+ </html>
+
+
+
+NEW WAY OF DOING THINGS
+secrets.js
+  //use github to make a new OAuth app (under developer settings)
+  client_id = "ea081f1ee0dfcbcb1237";
+  client_secret = "eac6aedbbfa49af2ac2fa3496585ec99fbe633e9";
