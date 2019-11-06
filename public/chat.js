@@ -8,6 +8,7 @@ var button = document.getElementById('send');
 var color = document.getElementById('colorButton');
 var output = document.getElementById('output');
 var feedback = document.getElementById('feedback');
+var imgForm = document.getElementById('imgForm');
 
 //Emit events
 
@@ -17,6 +18,12 @@ button.addEventListener('click', function(){
         handle: handle.value
     });
 });
+
+//TODO Is this a security issue?
+// imgForm.addEventListener("submit", function() {
+//     //save image
+//     //add filepath to image to the database
+// });
 
 //keyup event provides a code indicating which key is pressed...
 message.addEventListener('keyup', function(event) {
@@ -37,9 +44,13 @@ message.addEventListener('keypress', function(){
 socket.on('chat', function(data){
     output.innerHTML += '<p><strong>' + data.handle + '</strong>:  ' + data.message + '</p>';
     feedback.innerHTML = '';
-    // if (data.message.charAt(0) == '/') {
-    //     bot(data);
-    // }
+    
+    // Start Bot Code
+    if (data.message.charAt(0) == '/') {
+        simpleDice(data);
+    }
+    // End Bot Code
+
     output.scrollIntoView(false); //scrolls to bottom
     message.value = ''; //clears the message box
 });
@@ -50,38 +61,50 @@ socket.on('typing', function(data){
 });
 
 
-//Bot code
-// function bot(data) {
-//     //parse the message
-//     try {
-//         output.innerHTML += '<p><strong>Bot Got</strong>:  ' + data.message + '</p>';
-        
-//         var temp;
-//         var numDice;
-//         var roll;
-//         for (var i = 0; i < data.message.length; i++) {
-//             switch (data.message.charAt(i)) {
-//                 case '/' : //Do nothing
-//                     break;
-//                 case /(\d)/ :
-//                     temp += data.message.charAt(i); //TODO make sure this is adding char not int
-//                     break;
-//                 case 'd' :
-//                     numDice = temp; //May need to parse into an integer
-//                     temp = '';
-//                     break;
-//                 case '+' :
-//                     break;
-//                 case '-' :
-//                     break;
-//                 default:
-//                     throw true;
-                    
-//             }
-//             roll = temp * Math.random();
-//         }
-//         output.innerHTML += '<p><strong>DiceBot</strong>:  ' + roll + '</p>'; //TODO Change this.    
-//     } catch (err) {
-//         output.innerHTML += '<p><strong>DiceBot</strong>:  There was an issue with your syntax.</p>';
-//     }
-// }
+function simpleDice(data) {
+    
+    var cmdLength = data.message.length; //length of the command
+    var i = 1; //position in the command
+
+    var numDice = "";
+    var typeDice = "";
+    var modifier = "";
+    var addSub; //true if addition, false if subtraction
+    
+
+    while (i < cmdLength && data.message.charAt(i) != 'd') {
+        numDice += data.message.charAt(i);
+        i++;
+    }
+
+    i++; //moves past 'd'
+
+    while (i < cmdLength && data.message.charAt(i) != '+' && data.message.charAt(i) != '-') {
+        typeDice += data.message.charAt(i);
+        i++;
+    }
+
+    if (data.message.charAt(i) == '+') {
+        addSub = true;
+    } else if (data.message.charAt(i) == '-') {
+        addSub = false;
+    }
+
+    while (i < cmdLength) {
+        modifier += data.message.charAt(i);
+        i++;
+    }
+
+    var numDice = parseInt(numDice);
+    var typeDice = parseInt(typeDice);
+    var modifier = parseInt(modifier);
+
+    var roll = 0;
+    for (var i = 0; i < numDice; i++) {
+        roll += Math.ceil(typeDice * Math.random());
+    }
+
+    addSub ? roll += modifier : roll -= modifier;
+
+    output.innerHTML += '<p><strong>DiceBot</strong>:  Roll: ' + roll + '</p>';
+}
