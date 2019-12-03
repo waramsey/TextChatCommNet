@@ -44,12 +44,8 @@ message.addEventListener('keypress', function(){
 socket.on('chat', function(data){
     output.innerHTML += '<p><strong>' + data.handle + '</strong>:  ' + data.message + '</p>';
     feedback.innerHTML = '';
-    
-    // Start Bot Code
-    if (data.message.charAt(0) == '/') {
-        simpleDice(data);
-    }
-    // End Bot Code
+
+    //PREVIOUS LOCATION OF BOT CALL
 
     output.scrollIntoView(false); //scrolls to bottom
     message.value = ''; //clears the message box
@@ -59,52 +55,3 @@ socket.on('typing', function(data){
     feedback.innerHTML = '<p><em>' + data + ' is typing a message...</em></p>';
     feedback.scrollIntoView(true); //scrolls to bottom
 });
-
-
-function simpleDice(data) {
-    
-    var cmdLength = data.message.length; //length of the command
-    var i = 1; //position in the command
-
-    var numDice = "";
-    var typeDice = "";
-    var modifier = "";
-    var addSub; //true if addition, false if subtraction
-    
-
-    while (i < cmdLength && data.message.charAt(i) != 'd') {
-        numDice += data.message.charAt(i);
-        i++;
-    }
-
-    i++; //moves past 'd'
-
-    while (i < cmdLength && data.message.charAt(i) != '+' && data.message.charAt(i) != '-') {
-        typeDice += data.message.charAt(i);
-        i++;
-    }
-
-    if (data.message.charAt(i) == '+') {
-        addSub = true;
-    } else if (data.message.charAt(i) == '-') {
-        addSub = false;
-    }
-
-    while (i < cmdLength) {
-        modifier += data.message.charAt(i);
-        i++;
-    }
-
-    var numDice = parseInt(numDice);
-    var typeDice = parseInt(typeDice);
-    var modifier = parseInt(modifier);
-
-    var roll = 0;
-    for (var i = 0; i < numDice; i++) {
-        roll += Math.ceil(typeDice * Math.random());
-    }
-
-    addSub ? roll += modifier : roll -= modifier;
-
-    output.innerHTML += '<p><strong>DiceBot</strong>:  Roll: ' + roll + '</p>';
-}
