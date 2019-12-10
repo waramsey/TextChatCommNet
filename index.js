@@ -4,8 +4,8 @@ var socket = require('socket.io');
 
 //App setup
 var app = express();
-var server = app.listen(80, function(){ //listening at port 4000
-    console.log('listening to requests on port 8080');
+var server = app.listen(1234, function(){ //listening at port 1234
+    console.log('listening to requests on port 1234');
 });
 const path = require("path");
 
