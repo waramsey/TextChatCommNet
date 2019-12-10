@@ -1,5 +1,5 @@
 //Make Connection
-var socket = io.connect('http://167.172.112.67:8080');
+var socket = io.connect();
 
 //Query DOM
 var message = document.getElementById('message');
