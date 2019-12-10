@@ -12,14 +12,23 @@ const path = require("path");
 //Static files (what will be displayed on webpage)
 app.use(express.static(path.join(__dirname,"public")));
 
+
+
+
+
+
+
 //Socket setup
 var io = socket(server);
 
 io.on('connection', function(socket){
     console.log('made socket connection', socket.id);
 
-    socket.on('chat', function(data){
+    socket.on('chat', function(data){ //Check in here if I have a bot command
         io.sockets.emit('chat', data); //sockets refers to ALL connected sockets
+        if (data.message.charAt(0) == '/') {
+            simpleDice(data);//can we make output a string and send it back?
+        }
     });
 
     socket.on('typing', function(data){

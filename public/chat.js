@@ -1,5 +1,5 @@
 //Make Connection
-var socket = io.connect('http://localhost:8080');
+var socket = io.connect('http://167.172.112.67:8080');
 
 //Query DOM
 var message = document.getElementById('message');
@@ -11,7 +11,6 @@ var feedback = document.getElementById('feedback');
 var imgForm = document.getElementById('imgForm');
 
 //Emit events
-
 button.addEventListener('click', function(){
     socket.emit('chat', {
         message: message.value,
@@ -45,10 +44,10 @@ socket.on('chat', function(data){
     output.innerHTML += '<p><strong>' + data.handle + '</strong>:  ' + data.message + '</p>';
     feedback.innerHTML = '';
 
-    if (data.message.charAt(0) == '/') {
-        //TODO: ASK SERVER FOR INFORMATION
-        simpleDice(data);
-    }
+    // if (data.message.charAt(0) == '/') {
+    //     //TODO: ASK SERVER FOR INFORMATION
+    //     simpleDice(data);
+    // }
 
     output.scrollIntoView(false); //scrolls to bottom
     message.value = ''; //clears the message box
