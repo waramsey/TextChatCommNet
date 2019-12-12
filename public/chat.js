@@ -43,12 +43,6 @@ message.addEventListener('keypress', function(){
 socket.on('chat', function(data){
     output.innerHTML += '<p><strong>' + data.handle + '</strong>:  ' + data.message + '</p>';
     feedback.innerHTML = '';
-
-    // if (data.message.charAt(0) == '/') {
-    //     //TODO: ASK SERVER FOR INFORMATION
-    //     simpleDice(data);
-    // }
-
     output.scrollIntoView(false); //scrolls to bottom
     message.value = ''; //clears the message box
 });
@@ -58,59 +52,15 @@ socket.on('typing', function(data){
     feedback.scrollIntoView(true); //scrolls to bottom
 });
 
-//Dice Bot Code
-function simpleDice(data) {
-    
-    var cmdLength = data.message.length; //length of the command
-    var i = 1; //position in the command
-
-    var numDice = "";
-    var typeDice = "";
-    var modifier = "";
-    var addSub; //true if addition, false if subtraction
-    
-
-    while (i < cmdLength && data.message.charAt(i) != 'd') {
-        numDice += data.message.charAt(i);
-        i++;
+socket.on('roll', function(data){
+    var total = data.roll + data.modifier;
+    var image = '<img src="/images/AllUsers/RollDice.png" height="21" width="20"></img>';
+    if (typeof data.addSub === 'undefined') {
+        output.innerHTML += '<p><strong>' + image + '' + data.handle + ' Rolled: ' + data.roll + '</strong></p>';
+    } else if (data.addSub === true) {
+        output.innerHTML += '<p><strong>' + image + '' + data.handle + ' Rolled: ' + data.roll + '+' + data.modifier + ' = ' + total + '</strong></p>';
+    } else if (data.addSub === false) {
+        output.innerHTML += '<p><strong>' + image + '' + data.handle + ' Rolled: ' + data.roll + '' + data.modifier + ' = ' + total + '</strong></p>';
     }
-
-    i++; //moves past 'd'
-
-    while (i < cmdLength && data.message.charAt(i) != '+' && data.message.charAt(i) != '-') {
-        typeDice += data.message.charAt(i);
-        i++;
-    }
-
-    if (data.message.charAt(i) == '+') {
-        addSub = true;
-    } else if (data.message.charAt(i) == '-') {
-        addSub = false;
-    }
-
-    while (i < cmdLength) {
-        modifier += data.message.charAt(i);
-        i++;
-    }
-
-    var numDice = parseInt(numDice);
-    var typeDice = parseInt(typeDice);
-    var modifier = parseInt(modifier);
-
-    var roll = 0;
-    for (var i = 0; i < numDice; i++) {
-        roll += Math.ceil(typeDice * Math.random());
-    }
-
-    if (typeof addSub === 'undefined') {
-        //do nothing :)
-    } else if (addSub === true) {
-        output.innerHTML += '<p><strong>DiceBot</strong>:  Rolled: ' + roll + '+' + modifier + '</p>';
-        roll += modifier;
-    } else if (addSub === false) {
-        output.innerHTML += '<p><strong>DiceBot</strong>:  Rolled: ' + roll + '' + modifier + '</p>';
-        roll += modifier;
-    }
-
-    output.innerHTML += '<p><strong>DiceBot</strong>:  Total: ' + roll + '</p>';
-}
+    output.scrollIntoView(false); //scrolls to bottom
+});
