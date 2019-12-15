@@ -23,6 +23,13 @@ h2{
 #my-img{
     width: 40%;
     height: auto;
+    margin: auto;
+}
+
+.sideImage {
+    width: 80%;
+    margin: auto;
+    display: block;
 }
 
 #my-chat{
